@@ -25,7 +25,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url(/img/44444.png); /* Caminho da imagem de fundo */
+            background-image: url('./img/44444.png'); /* Caminho da imagem de fundo */
             background-size: cover;
             background-position: center;
             opacity: 0.8; /* Ajuste a opacidade da imagem de fundo */
@@ -187,7 +187,7 @@
     <div class="container">
         <div class="top-section">
             <div class="logo-container">
-                <img src="/img/img-1 (2).png" alt="Logo" class="logo">
+                <img src="./img/logo.png" alt="Logo" class="logo"> <!-- Caminho relativo para a imagem do logo -->
             </div>
             <h1>Calculadora de Parâmetros de Torneamento</h1>
         </div>
@@ -248,12 +248,12 @@
                             <th>Potência de Usinagem (P)</th>
                             <th>Torque (T)</th>
                             <th>Força de Corte (Fc)</th>
-                            <th>Coeficiente de Força Específica de Corte (Kc)</th>
-                            <th>Ação</th>
+                            <th>Kc</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Linhas serão adicionadas aqui -->
+                        <!-- Resultados serão adicionados aqui -->
                     </tbody>
                 </table>
             </div>
@@ -261,88 +261,56 @@
     </div>
 
     <script>
-        document.getElementById('form-adicionar-linha').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            // Obtendo os valores dos campos
+        // Função para adicionar uma nova linha à tabela com os resultados da usinagem
+        document.getElementById('form-adicionar-linha').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
             const operacao = document.getElementById('operacao').value;
             const material = document.getElementById('material').value;
-            let diametro = parseFloat(document.getElementById('diametro').value) || 0;
-            let ap = parseFloat(document.getElementById('ap').value) || 0;
-            let vc = parseFloat(document.getElementById('vc').value) || 0;
-            let f = parseFloat(document.getElementById('f').value) || 0;
-            let n = parseFloat(document.getElementById('n').value) || 0;
-            let tempo = parseFloat(document.getElementById('tempo').value) || 0;
-            let l = parseFloat(document.getElementById('l').value) || 0;
-            let vf = parseFloat(document.getElementById('vf').value) || 0;
-            let Kc = parseFloat(document.getElementById('Kc').value) || 1;
-            let mrr, p, t, fc;
+            const diametro = document.getElementById('diametro').value;
+            const ap = document.getElementById('ap').value;
+            const vc = document.getElementById('vc').value;
+            const f = document.getElementById('f').value;
+            const n = document.getElementById('n').value;
+            const tempo = document.getElementById('tempo').value;
+            const l = document.getElementById('l').value;
+            const vf = document.getElementById('vf').value;
+            const mrr = document.getElementById('mrr').value;
+            const p = document.getElementById('p').value;
+            const t = document.getElementById('t').value;
+            const fc = document.getElementById('fc').value;
+            const Kc = document.getElementById('Kc').value;
 
-            // Calcular vc ou rpm se necessário
-            if (n > 0 && diametro > 0) {
-                vc = (Math.PI * diametro * n) / 1000;
-            } else if (vc > 0 && diametro > 0) {
-                n = (1000 * vc) / (Math.PI * diametro);
-            }
+            const tabela = document.getElementById('tabela-usinagem').getElementsByTagName('tbody')[0];
+            const novaLinha = tabela.insertRow();
 
-            // Calcular f ou vf com base na entrada
-            if (vf > 0 && n > 0) {
-                f = vf / n;
-            } else if (f > 0 && n > 0) {
-                vf = n * f;
-            } 
-
-            // Calcular tempo se necessário
-            if (vf > 0 && l > 0) {
-                tempo = l / vf;
-            }
-
-            // Calcular MRR se necessário
-            if (ap > 0 && vf > 0) {
-                mrr = ap * vf;
-            }
-
-            // Cálculos
-            p = (ap * f * vc * Kc) / (60 * 1000); // Exemplo de cálculo de potência
-            t = (p * 9550) / n; // Exemplo de cálculo de torque
-            fc = p * 1000 / vc; // Exemplo de cálculo de força de corte
-
-            // Atualiza os valores dos campos calculados
-            document.getElementById('mrr').value = mrr.toFixed(2);
-            document.getElementById('p').value = p.toFixed(2);
-            document.getElementById('t').value = t.toFixed(2);
-            document.getElementById('fc').value = fc.toFixed(2);
-
-            // Adiciona os valores à tabela
-            const tabela = document.getElementById('tabela-usinagem').querySelector('tbody');
-            const linha = document.createElement('tr');
-            linha.innerHTML = `
+            novaLinha.innerHTML = `
                 <td>${operacao}</td>
                 <td>${material}</td>
-                <td>${diametro.toFixed(2)}</td>
-                <td>${ap.toFixed(2)}</td>
-                <td>${vc.toFixed(2)}</td>
-                <td>${f.toFixed(2)}</td>
-                <td>${n.toFixed(2)}</td>
-                <td>${tempo.toFixed(2)}</td>
-                <td>${l.toFixed(2)}</td>
-                <td>${vf.toFixed(2)}</td>
-                <td>${mrr.toFixed(2)}</td>
-                <td>${p.toFixed(2)}</td>
-                <td>${t.toFixed(2)}</td>
-                <td>${fc.toFixed(2)}</td>
-                <td>${Kc.toFixed(2)}</td>
-                <td><button class="remove-btn" onclick="removerLinha(this)">&#10005;</button></td>
+                <td>${diametro}</td>
+                <td>${ap}</td>
+                <td>${vc}</td>
+                <td>${f}</td>
+                <td>${n}</td>
+                <td>${tempo}</td>
+                <td>${l}</td>
+                <td>${vf}</td>
+                <td>${mrr}</td>
+                <td>${p}</td>
+                <td>${t}</td>
+                <td>${fc}</td>
+                <td>${Kc}</td>
+                <td><button class="remove-btn" onclick="removerLinha(this)">&#10060;</button></td>
             `;
-            tabela.appendChild(linha);
 
-            // Limpa os campos de entrada
+            // Limpar o formulário após a submissão
             document.getElementById('form-adicionar-linha').reset();
         });
 
+        // Função para remover uma linha da tabela
         function removerLinha(btn) {
-            const linha = btn.closest('tr');
-            linha.remove();
+            const linha = btn.parentNode.parentNode;
+            linha.parentNode.removeChild(linha);
         }
     </script>
 </body>
