@@ -253,7 +253,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Linhas serão adicionadas aqui -->
                     </tbody>
                 </table>
             </div>
@@ -261,88 +260,60 @@
     </div>
 
     <script>
-        document.getElementById('form-adicionar-linha').addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            // Obtendo os valores dos campos
-            const operacao = document.getElementById('operacao').value;
-            const material = document.getElementById('material').value;
-            let diametro = parseFloat(document.getElementById('diametro').value) || 0;
-            let ap = parseFloat(document.getElementById('ap').value) || 0;
-            let vc = parseFloat(document.getElementById('vc').value) || 0;
-            let f = parseFloat(document.getElementById('f').value) || 0;
-            let n = parseFloat(document.getElementById('n').value) || 0;
-            let tempo = parseFloat(document.getElementById('tempo').value) || 0;
-            let l = parseFloat(document.getElementById('l').value) || 0;
-            let vf = parseFloat(document.getElementById('vf').value) || 0;
-            let Kc = parseFloat(document.getElementById('Kc').value) || 1;
-            let mrr, p, t, fc;
-
-            // Calcular vc ou rpm se necessário
-            if (n > 0 && diametro > 0) {
-                vc = (Math.PI * diametro * n) / 1000;
-            } else if (vc > 0 && diametro > 0) {
-                n = (1000 * vc) / (Math.PI * diametro);
-            }
-
-            // Calcular f ou vf com base na entrada
-            if (vf > 0 && n > 0) {
-                f = vf / n;
-            } else if (f > 0 && n > 0) {
-                vf = n * f;
-            } 
-
-            // Calcular tempo se necessário
-            if (vf > 0 && l > 0) {
-                tempo = l / vf;
-            }
-
-            // Calcular MRR se necessário
-            if (ap > 0 && vf > 0) {
-                mrr = ap * vf;
-            }
-
-            // Cálculos
-            p = (ap * f * vc * Kc) / (60 * 1000); // Exemplo de cálculo de potência
-            t = (p * 9550) / n; // Exemplo de cálculo de torque
-            fc = p * 1000 / vc; // Exemplo de cálculo de força de corte
-
-            // Atualiza os valores dos campos calculados
-            document.getElementById('mrr').value = mrr.toFixed(2);
-            document.getElementById('p').value = p.toFixed(2);
-            document.getElementById('t').value = t.toFixed(2);
-            document.getElementById('fc').value = fc.toFixed(2);
-
-            // Adiciona os valores à tabela
-            const tabela = document.getElementById('tabela-usinagem').querySelector('tbody');
-            const linha = document.createElement('tr');
-            linha.innerHTML = `
-                <td>${operacao}</td>
-                <td>${material}</td>
-                <td>${diametro.toFixed(2)}</td>
-                <td>${ap.toFixed(2)}</td>
-                <td>${vc.toFixed(2)}</td>
-                <td>${f.toFixed(2)}</td>
-                <td>${n.toFixed(2)}</td>
-                <td>${tempo.toFixed(2)}</td>
-                <td>${l.toFixed(2)}</td>
-                <td>${vf.toFixed(2)}</td>
-                <td>${mrr.toFixed(2)}</td>
-                <td>${p.toFixed(2)}</td>
-                <td>${t.toFixed(2)}</td>
-                <td>${fc.toFixed(2)}</td>
-                <td>${Kc.toFixed(2)}</td>
-                <td><button class="remove-btn" onclick="removerLinha(this)">&#10005;</button></td>
-            `;
-            tabela.appendChild(linha);
-
-            // Limpa os campos de entrada
-            document.getElementById('form-adicionar-linha').reset();
+        document.getElementById('form-adicionar-linha').addEventListener('submit', function(event) {
+            event.preventDefault();
+            adicionarLinha();
         });
 
-        function removerLinha(btn) {
-            const linha = btn.closest('tr');
-            linha.remove();
+        function adicionarLinha() {
+            const operacao = document.getElementById('operacao').value;
+            const material = document.getElementById('material').value;
+            const diametro = parseFloat(document.getElementById('diametro').value) || 0;
+            const ap = parseFloat(document.getElementById('ap').value) || 0;
+            const vc = parseFloat(document.getElementById('vc').value) || 0;
+            const f = parseFloat(document.getElementById('f').value) || 0;
+            const n = vc && diametro ? (vc * 1000) / (Math.PI * diametro) : parseFloat(document.getElementById('n').value) || 0;
+            const tempo = parseFloat(document.getElementById('tempo').value) || 0;
+            const l = parseFloat(document.getElementById('l').value) || 0;
+            const vf = n && f ? n * f : parseFloat(document.getElementById('vf').value) || 0;
+            const mrr = vf && ap && diametro ? vf * ap * diametro : parseFloat(document.getElementById('mrr').value) || 0;
+            const p = parseFloat(document.getElementById('p').value) || 0;
+            const t = parseFloat(document.getElementById('t').value) || 0;
+            const fc = parseFloat(document.getElementById('fc').value) || 0;
+            const Kc = parseFloat(document.getElementById('Kc').value) || 0;
+
+            if (!operacao || !material || !diametro || !ap || !vc || !f) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+
+            const tabela = document.getElementById('tabela-usinagem').getElementsByTagName('tbody')[0];
+            const novaLinha = tabela.insertRow();
+
+            novaLinha.insertCell(0).textContent = operacao;
+            novaLinha.insertCell(1).textContent = material;
+            novaLinha.insertCell(2).textContent = diametro.toFixed(2);
+            novaLinha.insertCell(3).textContent = ap.toFixed(2);
+            novaLinha.insertCell(4).textContent = vc.toFixed(2);
+            novaLinha.insertCell(5).textContent = f.toFixed(2);
+            novaLinha.insertCell(6).textContent = n.toFixed(2);
+            novaLinha.insertCell(7).textContent = tempo.toFixed(2);
+            novaLinha.insertCell(8).textContent = l.toFixed(2);
+            novaLinha.insertCell(9).textContent = vf.toFixed(2);
+            novaLinha.insertCell(10).textContent = mrr.toFixed(2);
+            novaLinha.insertCell(11).textContent = p.toFixed(2);
+            novaLinha.insertCell(12).textContent = t.toFixed(2);
+            novaLinha.insertCell(13).textContent = fc.toFixed(2);
+            novaLinha.insertCell(14).textContent = Kc.toFixed(2);
+
+            const removeCell = novaLinha.insertCell(15);
+            const removeButton = document.createElement('button');
+            removeButton.textContent = '❌';
+            removeButton.classList.add('remove-btn');
+            removeButton.addEventListener('click', function() {
+                tabela.deleteRow(novaLinha.rowIndex - 1);
+            });
+            removeCell.appendChild(removeButton);
         }
     </script>
 </body>
