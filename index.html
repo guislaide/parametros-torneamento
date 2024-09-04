@@ -280,6 +280,12 @@
     let Kc = parseFloat(document.getElementById('Kc').value) || 1;
     let mrr, p, t, fc;
 
+    // Coloquei a opção do Faceamento
+
+    if (operacao === 'Faceamento') {
+        l = diametro / 2;
+    }
+
     // Calcular vc ou rpm se necessário
 
     if (n > 0 && diametro > 0) {
